@@ -16,7 +16,9 @@ document.getElementById("username-label").innerText = loginTranslations[selected
 document.getElementById("password-label").innerText = loginTranslations[selectedLanguage].password;
 document.getElementById("login-btn").innerText = loginTranslations[selectedLanguage].login;
 document.getElementById("no-account").innerHTML = loginTranslations[selectedLanguage].noAccount;
+
 document.getElementById("login-btn").addEventListener("click", function () {
     // Simulate login (Replace with actual authentication later)
     window.location.href = "cropguard.html"; // Redirect to CropGuard main page
 });
+

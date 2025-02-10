@@ -95,3 +95,4 @@ function findStorage() {
 
 // Attach function to window for HTML button click
 window.findStorage = findStorage;
+

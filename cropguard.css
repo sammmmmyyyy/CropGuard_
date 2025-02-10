@@ -54,10 +54,11 @@ button:hover {
 }
 
 #map-container {
-    height: 500px; /* Fixed height to make the map visible */
+    height: 500px;
     width: 90%;
     max-width: 900px;
     margin: 20px auto;
     border: 2px solid #2c5f2d;
     border-radius: 10px;
 }
+

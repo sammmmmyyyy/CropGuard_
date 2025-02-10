@@ -25,3 +25,4 @@ document.getElementById("continue-btn").addEventListener("click", function () {
     localStorage.setItem("selectedLanguage", selectedLanguage); // Save preference
     window.location.href = "login.html"; // Redirect to login/signup
 });
+

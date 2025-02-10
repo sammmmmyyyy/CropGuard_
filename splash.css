@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 * {
     margin: 0;
     padding: 0;
@@ -35,3 +36,42 @@ body {
     0% { opacity: 1; }
     100% { opacity: 0; }
 }
+=======
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #f8f8f5;
+    font-family: Arial, sans-serif;
+}
+
+.splash-screen {
+    text-align: center;
+    opacity: 1;
+    animation: fadeOut 3s ease-in-out forwards;
+}
+
+.logo {
+    width: 200px;
+    height: auto;
+}
+
+.tagline {
+    font-size: 18px;
+    font-weight: bold;
+    color: #4d4d4d;
+    margin-top: 10px;
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+>>>>>>> 1ebdf56 (Initial commit)
