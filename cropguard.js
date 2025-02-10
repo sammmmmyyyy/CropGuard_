@@ -4,13 +4,13 @@ import { getFirestore, collection, getDocs } from "https://www.gstatic.com/fireb
 
 // Firebase Config (REPLACE WITH YOUR ACTUAL CONFIG)
 const firebaseConfig = {
-    apiKey: "YOUR_FIREBASE_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID",
-    measurementId: "YOUR_MEASUREMENT_ID"
+    apiKey: "AIzaSyA2rO1Dzg99n1XP55oR1xAys8Q1i6WbbpI",
+    authDomain: "cropguard-1d323.firebaseapp.com",
+    projectId: "cropguard-1d323",
+    storageBucket: "cropguard-1d323.appspot.com",
+    messagingSenderId: "513110675804",
+    appId: "1:513110675804:web:358bf6779b7fbdb912b199",
+    measurementId: "G-TNHYSPJ1D9"
 };
 
 // Initialize Firebase
@@ -28,22 +28,40 @@ let markersLayer = L.layerGroup().addTo(map);
 
 // Function to get Latitude & Longitude using OpenStreetMap's Nominatim API
 async function getCoordinates(locationName) {
+    const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationName)}`;
+
     try {
-        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationName)}`);
-        if (!response.ok) {
-            throw new Error(`Nominatim API error: ${response.status}`);
-        }
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds timeout
+
+        const response = await fetch(apiUrl, { 
+            method: "GET",
+            headers: { "User-Agent": "CropGuard/1.0" },
+            signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) throw new Error(`API failed: ${response.status}`);
         const data = await response.json();
-        if (data.length === 0) return null;
-        return { latitude: parseFloat(data[0].lat), longitude: parseFloat(data[0].lon) };
+
+        if (data.length > 0) {
+            return { latitude: parseFloat(data[0].lat), longitude: parseFloat(data[0].lon) };
+        } else {
+            throw new Error("No results found for this location.");
+        }
     } catch (error) {
-        console.error("Error getting coordinates:", error);
-        alert("Error getting location coordinates. Please try again.");
+        if (error.name === 'AbortError') {
+            alert("Request timed out. Please try again.");
+        } else {
+            alert("Could not fetch coordinates. Please try again.");
+        }
+        console.error("Error fetching coordinates:", error);
         return null;
     }
 }
 
-// Function to calculate distance using the Haversine formula
+// Function to calculate distance using Haversine formula
 function getDistance(lat1, lon1, lat2, lon2) {
     const R = 6371; // Earth's radius in km
     const dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -52,14 +70,14 @@ function getDistance(lat1, lon1, lat2, lon2) {
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-// Function to find the nearest and next two cold storages
+// Function to find nearest storage
 async function findStorage() {
+    let userLocation = document.getElementById('location').value.trim();
     let crop = document.getElementById('crop').value;
     let quantity = parseFloat(document.getElementById('quantity').value) || 0;
     let days = parseInt(document.getElementById('days').value) || 0;
-    let userLocation = document.getElementById('location').value;
 
-    if (!crop || !quantity || !days || !userLocation) {
+    if (!userLocation || !crop || !quantity || !days) {
         alert("Please fill in all fields.");
         return;
     }
@@ -70,53 +88,61 @@ async function findStorage() {
     }
 
     let { latitude: userLat, longitude: userLon } = userCoords;
+    console.log(`User Coordinates: ${userLat}, ${userLon}`);
 
-    const storagesRef = collection(db, "storages");
-    const querySnapshot = await getDocs(storagesRef);
+    try {
+        // Fetch storage data from Firestore
+        const storagesRef = collection(db, "storages");
+        const querySnapshot = await getDocs(storagesRef);
 
-    let storageList = [];
-    querySnapshot.forEach((doc) => {
-        let storage = doc.data();
-        if (storage.location && storage.location.latitude && storage.location.longitude) {
-            storage.distance = getDistance(userLat, userLon, storage.location.latitude, storage.location.longitude);
-            storageList.push(storage);
+        let storageList = [];
+        querySnapshot.forEach((doc) => {
+            let storage = doc.data();
+            if (storage.location && storage.location.latitude && storage.location.longitude) {
+                storage.distance = getDistance(userLat, userLon, storage.location.latitude, storage.location.longitude);
+                storageList.push(storage);
+            }
+        });
+
+        if (storageList.length === 0) {
+            alert("No storages found.");
+            return;
         }
-    });
 
-    if (storageList.length === 0) {
-        alert("No storages found.");
-        return;
-    }
+        // Sort by distance (nearest first)
+        storageList.sort((a, b) => a.distance - b.distance);
 
-    // Sort storages by distance (ascending order)
-    storageList.sort((a, b) => a.distance - b.distance);
+        // Display nearest cold storage
+        let nearestStorage = storageList[0];
+        displayStorageDetails(nearestStorage, quantity, days, "nearest");
 
-    // Display nearest cold storage
-    let nearestStorage = storageList[0];
-    displayStorageDetails(nearestStorage, quantity, days, "nearest");
+        // Display further two storages
+        let furtherStorages = storageList.slice(1, 3);
+        furtherStorages.forEach((storage, index) => {
+            displayStorageDetails(storage, quantity, days, `further-${index + 1}`);
+        });
 
-    // Display further two storages
-    let furtherStorages = storageList.slice(1, 3);
-    furtherStorages.forEach((storage, index) => {
-        displayStorageDetails(storage, quantity, days, `further-${index + 1}`);
-    });
+        // Clear old markers
+        markersLayer.clearLayers();
 
-    // Clear old markers
-    markersLayer.clearLayers();
+        // Add markers for all three storages
+        storageList.slice(0, 3).forEach((storage, index) => {
+            if (storage.location && storage.location.latitude && storage.location.longitude) {
+                let marker = L.marker([storage.location.latitude, storage.location.longitude])
+                    .addTo(markersLayer)
+                    .bindPopup(`<h3>${storage.name || "N/A"} (${index === 0 ? "Nearest" : `Further ${index}`})</h3><p>₹${storage.price}/kg</p>`);
+                if (index === 0) marker.openPopup();
+            }
+        });
 
-    // Add markers for all three storages
-    storageList.slice(0, 3).forEach((storage, index) => {
-        if (storage.location && storage.location.latitude && storage.location.longitude) {
-            let marker = L.marker([storage.location.latitude, storage.location.longitude])
-                .addTo(markersLayer)
-                .bindPopup(`<h3>${storage.name || "N/A"} (${index === 0 ? "Nearest" : `Further ${index}`})</h3><p>₹${storage.price}/kg</p>`);
-            if (index === 0) marker.openPopup();
+        // Set map view to include the nearest storage
+        if (nearestStorage && nearestStorage.location) {
+            map.setView([nearestStorage.location.latitude, nearestStorage.location.longitude], 10);
         }
-    });
 
-    // Set map view to include the nearest storage
-    if (nearestStorage && nearestStorage.location) {
-        map.setView([nearestStorage.location.latitude, nearestStorage.location.longitude], 10);
+    } catch (error) {
+        console.error("Error fetching storages:", error);
+        alert("Failed to fetch storage data. Try again later.");
     }
 }
 

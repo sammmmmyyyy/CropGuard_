@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const translations = {
         en: {
             loginTitle: "Login / Signup",
+            userType: "Select User Type:",
             username: "Username:",
             password: "Password:",
             loginButton: "Login",
@@ -11,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         hi: {
             loginTitle: "लॉगिन / साइनअप",
+            userType: "उपयोगकर्ता प्रकार चुनें:",
             username: "उपयोगकर्ता नाम:",
             password: "पासवर्ड:",
             loginButton: "लॉगिन",
@@ -18,65 +20,19 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         mr: {
             loginTitle: "लॉगिन / साइनअप",
+            userType: "वापरकर्ता प्रकार निवडा:",
             username: "वापरकर्ता नाव:",
             password: "संकेतशब्द:",
             loginButton: "लॉगिन",
             noAccount: "खाते नाही? <a href='#'>साइन अप करा</a>"
-        },
-        bn: {
-            loginTitle: "লগইন / সাইনআপ",
-            username: "ব্যবহারকারীর নাম:",
-            password: "পাসওয়ার্ড:",
-            loginButton: "লগইন",
-            noAccount: "অ্যাকাউন্ট নেই? <a href='#'>সাইন আপ করুন</a>"
-        },
-        ta: {
-            loginTitle: "உள்நுழைவு / பதிவு",
-            username: "பயனர் பெயர்:",
-            password: "கடவுச்சொல்:",
-            loginButton: "உள்நுழைய",
-            noAccount: "கணக்கு இல்லையா? <a href='#'>பதிவு செய்ய</a>"
-        },
-        te: {
-            loginTitle: "లాగిన్ / సైన్ అప్",
-            username: "వాడుకరి పేరు:",
-            password: "పాస్‌వర్డ్:",
-            loginButton: "లాగిన్",
-            noAccount: "ఖాతా లేదా? <a href='#'>సైన్ అప్ చేయండి</a>"
-        },
-        ml: {
-            loginTitle: "ലോഗിൻ / സൈൻ അപ്പ്",
-            username: "ഉപയോക്തൃനാമം:",
-            password: "പാസ്വേഡ്:",
-            loginButton: "ലോഗിൻ",
-            noAccount: "അക്കൗണ്ട് ഇല്ലേ? <a href='#'>സൈൻ അപ്പ്</a>"
-        },
-        pa: {
-            loginTitle: "ਲੌਗਇਨ / ਸਾਈਨਅੱਪ",
-            username: "ਉਪਭੋਗਤਾ ਨਾਮ:",
-            password: "ਪਾਸਵਰਡ:",
-            loginButton: "ਲੌਗਇਨ",
-            noAccount: "ਖਾਤਾ ਨਹੀਂ ਹੈ? <a href='#'>ਸਾਈਨ ਅੱਪ</a>"
-        },
-        or: {
-            loginTitle: "ଲଗଇନ୍ / ସାଇନ୍ ଅପ୍",
-            username: "ଉପଯୋଗକର୍ତ୍ତା ନାମ:",
-            password: "ପାସୱାର୍ଡ:",
-            loginButton: "ଲଗଇନ୍",
-            noAccount: "ଏକାଉଣ୍ଟ ନାହିଁ? <a href='#'>ସାଇନ୍ ଅପ୍</a>"
-        },
-        gu: {
-            loginTitle: "લૉગિન / સાઇનઅપ",
-            username: "વપરાશકર્તા નામ:",
-            password: "પાસવર્ડ:",
-            loginButton: "લૉગિન",
-            noAccount: "ખાતું નથી? <a href='#'>સાઇન અપ કરો</a>"
         }
+        // Add more translations as needed...
     };
 
-    // Apply translations
+    // Apply translations based on selected language
     if (translations[language]) {
         document.getElementById("login-title").textContent = translations[language].loginTitle;
+        document.querySelector("label[for='user-type']").textContent = translations[language].userType;
         document.getElementById("username-label").textContent = translations[language].username;
         document.getElementById("password-label").textContent = translations[language].password;
         document.getElementById("login-btn").textContent = translations[language].loginButton;
@@ -85,6 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Login button click event
     document.getElementById("login-btn").addEventListener("click", () => {
+        const userType = document.getElementById("user-type").value;
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
 
@@ -93,10 +50,15 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Save login state (you can replace this with actual authentication logic)
+        // Save login state and user type
         localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("userType", userType);
 
-        // Redirect to CropGuard page
-        window.location.href = "cropguard.html";
+        // Redirect based on user type
+        if (userType === "vendor") {
+            window.location.href = "vendor.html"; // Redirect vendors to vendor page
+        } else {
+            window.location.href = "cropguard.html"; // Redirect farmers to CropGuard page
+        }
     });
 });

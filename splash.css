@@ -9,7 +9,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background:linear-gradient(to bottom right, rgb(115, 205, 115), #326e81);
+    background: linear-gradient(to bottom right, rgb(115, 205, 115), #326e81);
     font-family: Arial, sans-serif;
 }
 
@@ -30,8 +30,6 @@ body {
 .logo:hover {
     transform: scale(1.1);
 }
-
-
 
 .tagline {
     font-size: 18px;

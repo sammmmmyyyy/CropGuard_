@@ -7,43 +7,42 @@
     <link rel="stylesheet" href="style.css">
     <style>
         body {
-            font-family: 'Roboto', sans-serif; /* Consistent font */
-            background: linear-gradient(to bottom right, rgb(115, 205, 115), #326e81); /* Same background */
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to bottom right, rgb(115, 205, 115), #326e81);
             display: flex;
-            justify-content: center; /* Center horizontally */
-            align-items: center; /* Center vertically */
-            min-height: 100vh; /* Ensure full viewport height */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             margin: 0;
             color: white;
         }
 
         .container {
-            background-color: rgba(0, 0, 0, 0.7); /* Same container background */
+            background-color: rgba(0, 0, 0, 0.7);
             padding: 30px;
             border-radius: 8px;
             text-align: center;
-            width: 80%; /* Maintain responsive width */
-            max-width: 400px; /* Set a maximum width */
+            width: 80%;
+            max-width: 400px;
         }
-        #login-title{
+        
+        #login-title {
             color: rgb(186, 206, 32);
             margin-bottom: 20px;
         }
 
         label {
-            display: block; /* Labels on separate lines */
+            display: block;
             margin-bottom: 5px;
-            text-align: left; /* Align labels to the left */
+            text-align: left;
         }
 
-        input[type="text"],
-        input[type="password"] {
-            width: calc(100% - 10px); /* Full width input, accounting for padding */
+        select, input[type="text"], input[type="password"] {
+            width: calc(100% - 10px);
             padding: 10px;
             margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            box-sizing: border-box; /* Include padding in width calculation */
             background-color: rgba(0, 0, 0, 0.5);
             color: white;
         }
@@ -64,13 +63,20 @@
         }
 
         #no-account a {
-            color: rgb(186, 206, 32); /* Link color */
+            color: rgb(186, 206, 32);
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1 id="login-title">Login / Signup</h1>
+        
+        <label for="user-type">Select User Type:</label>
+        <select id="user-type">
+            <option value="farmer">Farmer</option>
+            <option value="vendor">Vendor</option>
+        </select>
+
         <label id="username-label" for="username">Username:</label>
         <input type="text" id="username" required><br>
 
