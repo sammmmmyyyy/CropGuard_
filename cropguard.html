@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,88 +9,44 @@
     <!-- Leaflet.js for OpenStreetMap -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-    <!-- Firebase and JavaScript File -->
 </head>
 <body>
     <header>
-<<<<<<< HEAD
-        <h2>CROP</h2>
-=======
-        <h6>GUARD</h6>
->>>>>>> 485fb3b (h6)
+        <h1>CROP GUARD</h1>
     </header>
-    
+
     <main>
         <section id="search-form">
             <h2>Find a Storage</h2>
             <label for="crop">Crop:</label>
             <input type="text" id="crop" required>
-            
+
             <label for="quantity">Quantity (kg):</label>
             <input type="number" id="quantity" required>
-            
+
             <label for="days">Storage Days:</label>
             <input type="number" id="days" required>
-            
+
             <label for="location">Your Location:</label>
             <input type="text" id="location" required>
-            
+
             <button onclick="findStorage()">Search</button>
         </section>
-        
+
+        <section id="storage-info">
+            <h3>Nearest Storage Details</h3>
+            <p><strong>Name:</strong> <span id="storage-name">N/A</span></p>
+            <p><strong>Price per kg:</strong> ₹<span id="storage-price">0</span></p>
+            <p><strong>Total Cost:</strong> ₹<span id="total-cost">0</span></p>
+            <p><strong>Contact:</strong> <span id="storage-contact">N/A</span></p>
+        </section>
+
         <section id="map">
             <h2>Nearby Storages</h2>
             <div id="map-container"></div>
         </section>
     </main>
+
     <script type="module" src="./cropguard.js"></script>
 </body>
 </html>
-=======
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CropGuard - Find Storage</title>
-    <link rel="stylesheet" href="cropguard.css">
-
-    <!-- Leaflet.js for OpenStreetMap -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-    <!-- Firebase and JavaScript File -->
-</head>
-<body>
-    <header>
-        <h1>CropGuard</h1>
-    </header>
-    
-    <main>
-        <section id="search-form">
-            <h2>Find a Storage</h2>
-            <label for="crop">Crop:</label>
-            <input type="text" id="crop" required>
-            
-            <label for="quantity">Quantity (kg):</label>
-            <input type="number" id="quantity" required>
-            
-            <label for="days">Storage Days:</label>
-            <input type="number" id="days" required>
-            
-            <label for="location">Your Location:</label>
-            <input type="text" id="location" required>
-            
-            <button onclick="findStorage()">Search</button>
-        </section>
-        
-        <section id="map">
-            <h2>Nearby Storages</h2>
-            <div id="map-container"></div>
-        </section>
-    </main>
-    <script type="module" src="./cropguard.js"></script>
-</body>
-</html>
->>>>>>> 1ebdf56 (Initial commit)
