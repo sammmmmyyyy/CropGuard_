@@ -9,7 +9,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: #f8f8f5;
+    background:linear-gradient(to bottom right, rgb(115, 205, 115), #326e81);
     font-family: Arial, sans-serif;
 }
 
@@ -21,8 +21,17 @@ body {
 
 .logo {
     width: 200px;
-    height: auto;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    transition: transform 0.3s ease-in-out;
 }
+
+.logo:hover {
+    transform: scale(1.1);
+}
+
+
 
 .tagline {
     font-size: 18px;

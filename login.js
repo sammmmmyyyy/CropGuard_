@@ -1,22 +1,56 @@
-// Fetch selected language from localStorage
-let selectedLanguage = localStorage.getItem("selectedLanguage") || "en";
+document.addEventListener("DOMContentLoaded", () => {
+    const language = localStorage.getItem("preferredLanguage") || "en";
 
-// Translations for login/signup page
-const loginTranslations = {
-    en: { title: "Login / Signup", username: "Username:", password: "Password:", login: "Login", noAccount: "Don't have an account? Sign Up" },
-    hi: { title: "लॉगिन / साइन अप", username: "उपयोगकर्ता नाम:", password: "पासवर्ड:", login: "लॉग इन करें", noAccount: "खाता नहीं है? साइन अप करें" },
-    mr: { title: "लॉगिन / साइन अप", username: "वापरकर्तानाव:", password: "संकेतशब्द:", login: "लॉग इन", noAccount: "खाते नाही? साइन अप करा" },
-    bn: { title: "লগইন / সাইন আপ", username: "ব্যবহারকারীর নাম:", password: "পাসওয়ার্ড:", login: "লগইন", noAccount: "একটি অ্যাকাউন্ট নেই? সাইন আপ করুন" },
-    ta: { title: "உள்நுழைவு / பதிவுபெறு", username: "பயனர் பெயர்:", password: "கடவுச்சொல்:", login: "உள்நுழைய", noAccount: "கணக்கு இல்லையா? பதிவுபெறுக" }
-};
+    const translations = {
+        en: {
+            loginTitle: "Login / Signup",
+            userType: "Select User Type:",
+            username: "Username:",
+            password: "Password:",
+            loginButton: "Login",
+            noAccount: "Don't have an account? <a href='#'>Sign Up</a>"
+        },
+        hi: {
+            loginTitle: "लॉगिन / साइनअप",
+            userType: "उपयोगकर्ता प्रकार चुनें:",
+            username: "उपयोगकर्ता नाम:",
+            password: "पासवर्ड:",
+            loginButton: "लॉगिन",
+            noAccount: "खाता नहीं है? <a href='#'>साइन अप करें</a>"
+        }
+        // Add translations for other languages...
+    };
 
-// Apply translations
-document.getElementById("login-title").innerText = loginTranslations[selectedLanguage].title;
-document.getElementById("username-label").innerText = loginTranslations[selectedLanguage].username;
-document.getElementById("password-label").innerText = loginTranslations[selectedLanguage].password;
-document.getElementById("login-btn").innerText = loginTranslations[selectedLanguage].login;
-document.getElementById("no-account").innerHTML = loginTranslations[selectedLanguage].noAccount;
-document.getElementById("login-btn").addEventListener("click", function () {
-    // Simulate login (Replace with actual authentication later)
-    window.location.href = "cropguard.html"; // Redirect to CropGuard main page
+    // Apply translations based on selected language
+    if (translations[language]) {
+        document.getElementById("login-title").textContent = translations[language].loginTitle;
+        document.querySelector("label[for='user-type']").textContent = translations[language].userType;
+        document.getElementById("username-label").textContent = translations[language].username;
+        document.getElementById("password-label").textContent = translations[language].password;
+        document.getElementById("login-btn").textContent = translations[language].loginButton;
+        document.getElementById("no-account").innerHTML = translations[language].noAccount;
+    }
+
+    // Login button click event
+    document.getElementById("login-btn").addEventListener("click", () => {
+        const userType = document.getElementById("user-type").value;
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        if (username.trim() === "" || password.trim() === "") {
+            alert("Please enter both username and password.");
+            return;
+        }
+
+        // Save login state and user type
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("userType", userType);
+
+        // Redirect based on user type
+        if (userType === "vendor") {
+            window.location.href = "vendor.html"; // Redirect vendors to vendor page
+        } else {
+            window.location.href = "cropguard.html"; // Redirect farmers to cropguard page
+        }
+    });
 });

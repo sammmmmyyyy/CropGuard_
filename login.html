@@ -5,10 +5,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CropGuard - Login/Signup</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to bottom right, rgb(115, 205, 115), #326e81);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: white;
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            width: 80%;
+            max-width: 400px;
+        }
+        
+        #login-title {
+            color: rgb(186, 206, 32);
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        select, input[type="text"], input[type="password"] {
+            width: calc(100% - 10px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+        }
+
+        button {
+            background-color: rgb(103, 130, 5);
+            color: black;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        #no-account {
+            margin-top: 15px;
+        }
+
+        #no-account a {
+            color: rgb(186, 206, 32);
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1 id="login-title">Login / Signup</h1>
+        
+        <label for="user-type">Select User Type:</label>
+        <select id="user-type">
+            <option value="farmer">Farmer</option>
+            <option value="vendor">Vendor</option>
+        </select>
+
         <label id="username-label" for="username">Username:</label>
         <input type="text" id="username" required><br>
 

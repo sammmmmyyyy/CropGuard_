@@ -20,14 +20,19 @@ main {
     padding: 20px;
 }
 
-#search-form {
+#search-form, #storage-info {
     background: #ffffff;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     max-width: 400px;
-    margin: auto;
+    margin: 20px auto;
     border: 2px solid #2c5f2d;
+    text-align: left;
+}
+
+#storage-info {
+    background: #dfffe0;
 }
 
 input, button {
@@ -54,7 +59,7 @@ button:hover {
 }
 
 #map-container {
-    height: 500px; /* Fixed height to make the map visible */
+    height: 500px;
     width: 90%;
     max-width: 900px;
     margin: 20px auto;

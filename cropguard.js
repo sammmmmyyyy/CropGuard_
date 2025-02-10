@@ -17,81 +17,131 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-document.addEventListener("DOMContentLoaded", function () {
-    let selectedLanguage = localStorage.getItem("selectedLanguage") || "en";
-    console.log("Selected Language:", selectedLanguage);
-    
-    // Function to translate UI text dynamically (if required later)
-    function applyTranslations() {
-        // Example: document.getElementById("someElement").innerText = translations[selectedLanguage]["someText"];
-    }
-    
-    applyTranslations();
+// Initialize Leaflet Map
+let map = L.map('map-container').setView([20.5937, 78.9629], 5);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
 
-    let map = L.map('map-container').setView([20.5937, 78.9629], 5); // Default: India
+// Function to get Latitude & Longitude using OpenStreetMap's Nominatim API
+async function getCoordinates(locationName) {
+    const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(locationName)}`;
 
-    // Add OpenStreetMap Tile Layer
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds timeout
 
-    async function fetchStorages() {
-        try {
-            const querySnapshot = await getDocs(collection(db, "storages"));
-            
-            if (querySnapshot.empty) {
-                console.warn("No storage locations found in database.");
-                return;
-            }
+        const response = await fetch(apiUrl, { 
+            method: "GET",
+            headers: { "User-Agent": "CropGuard/1.0" },
+            signal: controller.signal
+        });
 
-            querySnapshot.forEach((doc) => {
-                let storage = doc.data();
+        clearTimeout(timeoutId);
 
-                // Check if 'location' field exists and contains GeoPoint
-                if (!storage.location || !storage.location.latitude || !storage.location.longitude) {
-                    console.warn(`Storage ${storage.name} is missing a valid GeoPoint location.`);
-                    return;
-                }
+        if (!response.ok) throw new Error(`API failed: ${response.status}`);
+        const data = await response.json();
 
-                let lat = storage.location.latitude;
-                let lng = storage.location.longitude;
-
-                console.log(`Storage Found: ${storage.name} at (${lat}, ${lng})`);
-
-                // Add marker for each storage location
-                L.marker([lat, lng])
-                    .addTo(map)
-                    .bindPopup(`
-                        <h3>${storage.name}</h3>
-                        <p><strong>Location:</strong> ${storage.address}</p>
-                        <p><strong>Price:</strong> ₹${storage.price_per_kg}/kg</p>
-                        <p><strong>Available Space:</strong> ${storage.available_space} kg</p>
-                        <p><strong>Phone:</strong> ${storage.phone}</p>
-                    `);
-            });
-
-        } catch (error) {
-            console.error("Error fetching storage data:", error);
+        if (data.length > 0) {
+            return { latitude: parseFloat(data[0].lat), longitude: parseFloat(data[0].lon) };
+        } else {
+            throw new Error("No results found for this location.");
         }
-    }
-
-    fetchStorages();
-});
-
-// Function to Handle Search Button
-function findStorage() {
-    let crop = document.getElementById('crop').value;
-    let quantity = document.getElementById('quantity').value;
-    let days = document.getElementById('days').value;
-    let location = document.getElementById('location').value;
-    
-    if (crop && quantity && days && location) {
-        alert(`Searching for storage for ${quantity}kg of ${crop} for ${days} days near ${location}`);
-        // Location-based filtering logic can be implemented here
-    } else {
-        alert("Please fill in all fields.");
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            alert("Request timed out. Please try again.");
+        } else {
+            alert("Could not fetch coordinates. Please try again.");
+        }
+        console.error("Error fetching coordinates:", error);
+        return null;
     }
 }
 
-// Attach function to window for HTML button click
+// Function to calculate distance using Haversine formula
+function getDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Earth's radius in km
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// Function to find nearest storage
+async function findStorage() {
+    let userLocation = document.getElementById('location').value.trim();
+    if (!userLocation) {
+        alert("Please enter your location.");
+        return;
+    }
+
+    let userCoords = await getCoordinates(userLocation);
+    if (!userCoords) {
+        alert("Could not find coordinates. Try a different location.");
+        return;
+    }
+
+    let { latitude: userLat, longitude: userLon } = userCoords;
+    console.log(`User Coordinates: ${userLat}, ${userLon}`);
+
+    try {
+        // Fetch storage data from Firestore
+        const storagesRef = collection(db, "storages");
+        const querySnapshot = await getDocs(storagesRef);
+
+        let storageList = [];
+        querySnapshot.forEach((doc) => {
+            let storage = doc.data();
+            if (storage.location && storage.location.latitude && storage.location.longitude) {
+                storage.distance = getDistance(userLat, userLon, storage.location.latitude, storage.location.longitude);
+                storageList.push(storage);
+            }
+        });
+
+        if (storageList.length === 0) {
+            alert("No storages found.");
+            return;
+        }
+
+        // Sort by distance (nearest first)
+        storageList.sort((a, b) => a.distance - b.distance);
+        let nearestStorage = storageList[0];
+
+        // Display nearest storage details
+        document.getElementById("storage-name").innerText = nearestStorage.name || "N/A";
+        document.getElementById("storage-price").innerText = nearestStorage.price ? `₹${nearestStorage.price}/kg` : "N/A";
+        document.getElementById("storage-contact").innerText = nearestStorage.contact || "N/A";
+
+        // Clear old markers
+        map.eachLayer((layer) => {
+            if (layer instanceof L.Marker) {
+                map.removeLayer(layer);
+            }
+        });
+
+        // Add user location marker
+        L.marker([userLat, userLon], { 
+            icon: L.icon({ 
+                iconUrl: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png', 
+                iconSize: [32, 32] 
+            }) 
+        }).addTo(map).bindPopup(`<b>Your Location</b><br>${userLocation}`).openPopup();
+
+        // Add storage location markers
+        storageList.forEach((storage) => {
+            L.marker([storage.location.latitude, storage.location.longitude])
+                .addTo(map)
+                .bindPopup(`<h3>${storage.name}</h3><p>₹${storage.price}/kg</p>`);
+        });
+
+        // Center map to nearest storage
+        map.setView([nearestStorage.location.latitude, nearestStorage.location.longitude], 10);
+
+    } catch (error) {
+        console.error("Error fetching storages:", error);
+        alert("Failed to fetch storage data. Try again later.");
+    }
+}
+
+// Attach function to global scope
 window.findStorage = findStorage;
