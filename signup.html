@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CropGuard - Signup</title>
+    <link rel="stylesheet" href="signup.css">
+</head>
+<body>
+    <div class="container">
+        <h1 id="signup-title">Sign Up</h1>
+
+        <label for="user-type">Select User Type:</label>
+        <select id="user-type">
+            <option value="farmer">Farmer</option>
+            <option value="vendor">Vendor</option>
+        </select>
+
+        <label for="username">Username:</label>
+        <input type="text" id="username" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" required>
+
+        <label for="confirm-password">Confirm Password:</label>
+        <input type="password" id="confirm-password" required>
+
+        <button id="signup-btn">Sign Up</button>
+        
+        <p id="have-account">Already have an account? <a href="login.html">Login</a></p>
+    </div>
+
+    <script src="signup.js"></script>
+</body>
+</html>
