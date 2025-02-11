@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CropGuard - Vendor Registration</title>
+    <link rel="stylesheet" href="vendor.css">
+    <script type="module" defer src="vendor.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 id="register-title">Vendor Registration</h1>
+        
+        <form id="vendor-form">
+            <label for="storage-name">Storage Facility Name:</label>
+            <input type="text" id="storage-name" required>
+
+            <label for="available-space">Available Space (kg):</label>
+            <input type="number" id="available-space" required>
+
+            <label for="price">Price per kg per hour (₹):</label>
+            <input type="number" id="price" required>
+
+            <label for="contact-number">Contact Number:</label>
+            <input type="tel" id="contact-number" required pattern="[0-9]{10}" placeholder="Enter 10-digit phone number">
+
+            <label for="latitude">Latitude (Decimal):</label>
+            <input type="number" id="latitude" step="0.000001" required>
+
+            <label for="longitude">Longitude (Decimal):</label>
+            <input type="number" id="longitude" step="0.000001" required>
+
+            <button type="submit" id="register-btn">Register Storage</button>
+        </form>
+    </div>
+</body>
+</html>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyA2rO1Dzg99n1XP55oR1xAys8Q1i6WbbpI",
+    authDomain: "cropguard-1d323.firebaseapp.com",
+    projectId: "cropguard-1d323",
+    storageBucket: "cropguard-1d323.appspot.com",
+    messagingSenderId: "513110675804",
+    appId: "1:513110675804:web:358bf6779b7fbdb912b199",
+    measurementId: "G-TNHYSPJ1D9"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+document.getElementById("vendor-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const storageName = document.getElementById("storage-name").value;
+    const availableSpace = document.getElementById("available-space").value;
+    const price = document.getElementById("price").value;
+    const contactNumber = document.getElementById("contact-number").value;
+    const latitude = parseFloat(document.getElementById("latitude").value);
+    const longitude = parseFloat(document.getElementById("longitude").value);
+
+    if (isNaN(latitude) || isNaN(longitude)) {
+        alert("Please enter valid decimal values for Latitude and Longitude.");
+        return;
+    }
+
+    try {
+        await addDoc(collection(db, "vendors"), {
+            storageName,
+            availableSpace: Number(availableSpace),
+            price: Number(price),
+            contactNumber,
+            latitude,
+            longitude
+        });
+        alert("Storage registered successfully!");
+        document.getElementById("vendor-form").reset();
+    } catch (error) {
+        console.error("Error adding document: ", error);
+        alert("Error saving vendor details. Please try again.");
+    }
+});
+</script>
