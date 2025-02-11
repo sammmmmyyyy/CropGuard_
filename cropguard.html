@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CropGuard - Find Storage</title>
+    
+    <!-- Leaflet.js for OpenStreetMap -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="cropguard.css">
+
+    <style>
+        header {
+            display: flex;
+            align-items: center;
+            background-color: #2a6d4f;
+            padding: 15px;
+            color: white;
+        }
+
+        #logo {
+            height: 50px;
+            margin-right: 15px;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        #map-container {
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <header  class="header-container" >
+        <img id="logo" src="logo.jpg" alt="CropGuard Logo">
+        <center>
+        <h3>Maximize Your Yield with CropGuard...</h3>
+        </center>
+    </header>
+
+    <main>
+        <!-- User Input Section -->
+        <section class="section-container" id="search-form">
+            <h2>Find a Storage</h2>
+
+            <label for="crop">Crop:</label>
+            <input type="text" id="crop" placeholder="Enter crop name" required>
+
+            <label for="quantity">Quantity (kg):</label>
+            <input type="number" id="quantity" placeholder="Enter quantity" required>
+
+            <label for="days">Storage Days:</label>
+            <input type="number" id="days" placeholder="Enter days" required>
+
+            <label for="location">Your Location:</label>
+            <input type="text" id="location" placeholder="Enter your location">
+            
+            <button onclick="findStorage()">Find Storage</button>
+        </section>
+
+        <!-- Storage Information -->
+        <section id="storage-info">
+            <h3>Nearest Storage Details</h3>
+            <p><strong>Name:</strong> <span id="storage-name">N/A</span></p>
+            <p><strong>Price per kg:</strong> ₹<span id="storage-price">0</span></p>
+            <p><strong>Total Cost:</strong> ₹<span id="total-cost">0</span></p>
+            <p><strong>Contact:</strong> <span id="storage-contact">N/A</span></p>
+        </section>
+
+        <!-- Map Section -->
+        <section id="map">
+            <h2>Nearby Storages</h2>
+            <div id="map-container"></div>
+        </section>
+    </main>
+
+    <!-- JavaScript for Functionality -->
+    <script type="module" src="./cropguard.js"></script>
+</body>
+</html>
