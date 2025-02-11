@@ -1,0 +1,44 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to bottom right, rgb(115, 205, 115), #326e81);
+    font-family: Arial, sans-serif;
+}
+
+.splash-screen {
+    text-align: center;
+    opacity: 1;
+    animation: fadeOut 3s ease-in-out forwards;
+}
+
+.logo {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    transition: transform 0.3s ease-in-out;
+}
+
+.logo:hover {
+    transform: scale(1.1);
+}
+
+.tagline {
+    font-size: 18px;
+    font-weight: bold;
+    color: #4d4d4d;
+    margin-top: 10px;
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
